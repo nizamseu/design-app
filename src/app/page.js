@@ -1,101 +1,102 @@
-import Image from "next/image";
+// src/app/page.js
+"use client";
+import { useState } from "react";
+import Canvas from "@/components/Canvas/Canvas";
+import Toolbar from "@/components/Toolbar/Toolbar";
+import PropertiesPanel from "@/components/PropertiesPanel/PropertiesPanel";
+import LayersPanel from "@/components/LayersPanel/LayersPanel";
+import { useSelector, useDispatch } from "react-redux";
+import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [isRightPanelOpen, setRightPanelOpen] = useState(true);
+  const [activeTab, setActiveTab] = useState("layers"); // 'layers' or 'properties'
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  return (
+    <div className="h-screen w-screen overflow-hidden bg-gray-50 flex flex-col">
+      {/* Top Bar */}
+      <div className="h-14 bg-white border-b flex items-center justify-between px-4 shadow-sm z-20">
+        <div className="flex items-center space-x-3">
+          <h1 className="font-semibold text-lg">Design Editor</h1>
+          <span className="text-sm text-gray-500">Untitled Project</span>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+        <div className="flex items-center space-x-2">
+          <button className="p-2 hover:bg-gray-100 rounded text-gray-600">
+            Share
+          </button>
+          <button className="p-2 hover:bg-gray-100 rounded text-gray-600">
+            Export
+          </button>
+          <button className="ml-2 px-4 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700">
+            Save
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex relative">
+        {/* Canvas Area with Toolbar Overlay */}
+        <div className="flex-1 relative bg-gray-100 overflow-hidden">
+          {/* Canvas */}
+          <Canvas />
+
+          {/* Original Toolbar - Now properly positioned */}
+          <Toolbar />
+        </div>
+
+        {/* Right Panel (Layers & Properties) */}
+        <div
+          className={`${
+            isRightPanelOpen ? "w-80" : "w-0"
+          } bg-white border-l flex flex-col transition-all duration-300 shadow-lg z-10`}
         >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          {isRightPanelOpen && (
+            <>
+              {/* Tabs */}
+              <div className="h-12 border-b flex">
+                <button
+                  className={`flex-1 px-4 py-2 text-sm font-medium ${
+                    activeTab === "layers"
+                      ? "border-b-2 border-blue-600 text-blue-600"
+                      : "text-gray-600 hover:bg-gray-50"
+                  }`}
+                  onClick={() => setActiveTab("layers")}
+                >
+                  Layers
+                </button>
+                <button
+                  className={`flex-1 px-4 py-2 text-sm font-medium ${
+                    activeTab === "properties"
+                      ? "border-b-2 border-blue-600 text-blue-600"
+                      : "text-gray-600 hover:bg-gray-50"
+                  }`}
+                  onClick={() => setActiveTab("properties")}
+                >
+                  Properties
+                </button>
+              </div>
+
+              {/* Panel Content */}
+              <div className="w-80 border-l bg-white h-full flex flex-col">
+                {activeTab === "layers" ? <LayersPanel /> : <PropertiesPanel />}
+              </div>
+            </>
+          )}
+
+          {/* Toggle Panel Button */}
+          <button
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-full 
+                     bg-white p-2 rounded-l-lg shadow-lg border border-r-0"
+            onClick={() => setRightPanelOpen(!isRightPanelOpen)}
+          >
+            {isRightPanelOpen ? (
+              <ArrowRightIcon className="w-4 h-4" />
+            ) : (
+              <ArrowLeftIcon className="w-4 h-4" />
+            )}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
