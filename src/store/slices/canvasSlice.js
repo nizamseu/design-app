@@ -143,6 +143,68 @@ const canvasSlice = createSlice({
         element.parentId = newParentId;
       }
     },
+    deleteElements: (state, action) => {
+      state.elements = state.elements.filter(
+        (element) => !action.payload.includes(element.id)
+      );
+      state.selectedIds = [];
+    },
+    bringToFront: (state, action) => {
+      const elementIds = Array.isArray(action.payload)
+        ? action.payload
+        : [action.payload];
+      const elements = [...state.elements];
+      const movedElements = elements.filter((el) => elementIds.includes(el.id));
+      const otherElements = elements.filter(
+        (el) => !elementIds.includes(el.id)
+      );
+      state.elements = [...otherElements, ...movedElements];
+    },
+
+    sendToBack: (state, action) => {
+      const elementIds = Array.isArray(action.payload)
+        ? action.payload
+        : [action.payload];
+      const elements = [...state.elements];
+      const movedElements = elements.filter((el) => elementIds.includes(el.id));
+      const otherElements = elements.filter(
+        (el) => !elementIds.includes(el.id)
+      );
+      state.elements = [...movedElements, ...otherElements];
+    },
+
+    moveUp: (state, action) => {
+      const elementId = action.payload;
+      const index = state.elements.findIndex((el) => el.id === elementId);
+      if (index < state.elements.length - 1) {
+        const newElements = [...state.elements];
+        [newElements[index], newElements[index + 1]] = [
+          newElements[index + 1],
+          newElements[index],
+        ];
+        state.elements = newElements;
+      }
+    },
+
+    moveDown: (state, action) => {
+      const elementId = action.payload;
+      const index = state.elements.findIndex((el) => el.id === elementId);
+      if (index > 0) {
+        const newElements = [...state.elements];
+        [newElements[index], newElements[index - 1]] = [
+          newElements[index - 1],
+          newElements[index],
+        ];
+        state.elements = newElements;
+      }
+    },
+    updateZoom: (state, action) => {
+      state.zoom = action.payload;
+    },
+
+    updateViewportOffset: (state, action) => {
+      state.viewportOffset = action.payload;
+    },
   },
 });
 
@@ -160,6 +222,12 @@ export const {
   ungroup,
   reorderElements,
   updateElementParent,
+  bringToFront,
+  sendToBack,
+  moveUp,
+  moveDown,
+  updateZoom,
+  updateViewportOffset,
 } = canvasSlice.actions;
 
 export default canvasSlice.reducer;
